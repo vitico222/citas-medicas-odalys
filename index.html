@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dra. Odalys Martínez | Agenda Profesional & Gestión Médica</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="assets/logo_favicon.png" type="image/png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ========================================== -->
+    <!-- CABECERA Y NAVEGACIÓN                      -->
+    <!-- ========================================== -->
+    <header class="main-header">
+      <div class="header-container">
+        <div class="brand">
+          <img
+            src="assets/logo_oda.jpg"
+            alt="Logo Dra. Odalys Martínez"
+            class="brand-logo"
+          />
+          <div class="brand-text">
+            <h1 class="brand-title">Dra. Odalys Martínez</h1>
+            <p class="brand-subtitle">Médico Psiquiatra | Agenda Profesional</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <span id="current-date-badge" class="date-badge"
+            ><i class="fa-regular fa-calendar-check"></i> Loading...</span
+          >
+          <button id="btn-logout" class="btn btn-secondary btn-3d hidden">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="btn-text">Cerrar Sesión</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <!-- ========================================== -->
+      <!-- SECCIÓN 1: PANTALLA DE INICIO DE SESIÓN    -->
+      <!-- ========================================== -->
+      <section id="login-section" class="auth-card">
+        <div class="auth-header">
+          <img
+            src="assets/logo_oda.jpg"
+            alt="Dra. Odalys Martínez"
+            class="auth-logo"
+          />
+          <h2>Acceso Profesional</h2>
+          <p>
+            Ingrese sus credenciales para acceder a su agenda médica y briefing
+            diario.
+          </p>
+        </div>
+
+        <form id="login-form" class="auth-form" autocomplete="off">
+          <div class="form-group">
+            <label for="login-email"
+              ><i class="fa-solid fa-envelope"></i> Correo Electrónico</label
+            >
+            <input
+              type="email"
+              id="login-email"
+              class="form-input"
+              placeholder="dra.odalysmartinez@ejemplo.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="login-password"
+              ><i class="fa-solid fa-lock"></i> Contraseña</label
+            >
+            <input
+              type="password"
+              id="login-password"
+              class="form-input"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <div id="login-error" class="alert alert-error hidden"></div>
+
+          <button
+            type="submit"
+            id="btn-login"
+            class="btn btn-primary btn-3d btn-block"
+          >
+            <i class="fa-solid fa-shield-halved"></i> Iniciar Sesión
+          </button>
+        </form>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SECCIÓN 2: DASHBOARD (PANEL PRINCIPAL)     -->
+      <!-- ========================================== -->
+      <div id="dashboard-section" class="dashboard-content hidden">
+        <!-- BANNER BRIEFING DIARIO (5:30 AM) -->
+        <section class="briefing-card">
+          <div class="briefing-header">
+            <div class="briefing-title">
+              <i class="fa-solid fa-sun-plant-wilt icon-gold"></i>
+              <div>
+                <h2>Briefing Diario de Actividades</h2>
+                <span class="briefing-time"
+                  ><i class="fa-regular fa-clock"></i> Resumen de las 5:30
+                  AM</span
+                >
+              </div>
+            </div>
+            <button
+              id="btn-toggle-privacy"
+              class="btn btn-outline btn-3d"
+              title="Ocultar/Mostrar datos confidenciales"
+            >
+              <i class="fa-solid fa-eye-slash" id="privacy-icon"></i> Modo
+              Privacidad
+            </button>
+          </div>
+
+          <div class="briefing-body">
+            <div class="briefing-box today-box">
+              <h3><i class="fa-solid fa-calendar-day"></i> Agenda para Hoy</h3>
+              <div id="today-summary-list" class="summary-list">
+                <p class="empty-msg">Cargando actividades del día...</p>
+              </div>
+            </div>
+
+            <div class="briefing-box tomorrow-box">
+              <h3>
+                <i class="fa-solid fa-bell"></i> Recordatorio: Citas para Mañana
+              </h3>
+              <div id="tomorrow-summary-list" class="summary-list">
+                <p class="empty-msg">Verificando citas de mañana...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- METRICAS / KPIS -->
+        <section class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-teal">
+              <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-value" id="kpi-today-patients">0</span>
+              <span class="kpi-label">Pacientes Hoy</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon bg-blue">
+              <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-value" id="kpi-events-month">0</span>
+              <span class="kpi-label">Conferencias/Eventos</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon bg-orange">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-value" id="kpi-pending-reschedule">0</span>
+              <span class="kpi-label">Por Reagendar</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon bg-green">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-value" id="kpi-attended-month">0</span>
+              <span class="kpi-label">Atendidos este Mes</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- NAVEGACIÓN DE PESTAÑAS (TABS) -->
+        <nav class="tabs-navigation">
+          <button class="tab-btn active" data-tab="tab-pacientes">
+            <i class="fa-solid fa-users"></i> Registro & Pacientes
+          </button>
+          <button class="tab-btn" data-tab="tab-agenda">
+            <i class="fa-solid fa-calendar-days"></i> Agenda & Conferencias
+          </button>
+          <button class="tab-btn" data-tab="tab-backup">
+            <i class="fa-solid fa-database"></i> Respaldos
+          </button>
+        </nav>
+
+        <!-- PESTAÑA 1: GESTIÓN DE PACIENTES -->
+        <div id="tab-pacientes" class="tab-content active">
+          <div class="grid-layout">
+            <!-- FORMULARIO DE REGISTRO RÁPIDO DE PACIENTE -->
+            <section class="card-box">
+              <div class="card-header">
+                <h3>
+                  <i class="fa-solid fa-user-plus"></i> Registro Rápido de
+                  Paciente
+                </h3>
+              </div>
+
+              <form id="patient-form" class="form-grid">
+                <input type="hidden" id="patient-id" />
+
+                <div class="form-group span-2">
+                  <label for="patient-name">Nombre y Apellido *</label>
+                  <input
+                    type="text"
+                    id="patient-name"
+                    class="form-input"
+                    placeholder="Ej. María Pérez"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="patient-phone">Teléfono (WhatsApp) *</label>
+                  <input
+                    type="tel"
+                    id="patient-phone"
+                    class="form-input"
+                    placeholder="+584121234567"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="patient-datetime">Fecha y Hora *</label>
+                  <input
+                    type="datetime-local"
+                    id="patient-datetime"
+                    class="form-input"
+                    required
+                  />
+                </div>
+
+                <div class="form-group span-2">
+                  <label for="patient-location">Lugar de Consulta *</label>
+                  <input
+                    type="text"
+                    id="patient-location"
+                    class="form-input"
+                    placeholder="Ej. Consultorio Privado / Hospital Central de Maracay"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="patient-status">Estado de Cita</label>
+                  <select id="patient-status" class="form-input">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Atendido">Atendido</option>
+                    <option value="Reagendar">Reagendar</option>
+                    <option value="Cancelado">Cancelado</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="patient-payment">Estado Financiero</label>
+                  <select id="patient-payment" class="form-input">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Pagado">Pagado</option>
+                    <option value="Abonado">Abonado</option>
+                  </select>
+                </div>
+
+                <div class="form-group span-2">
+                  <label for="patient-motive"
+                    >Motivo de Consulta / Impresión Inicial</label
+                  >
+                  <textarea
+                    id="patient-motive"
+                    class="form-input textarea-short"
+                    placeholder="Observaciones preliminares..."
+                  ></textarea>
+                </div>
+
+                <div class="form-actions span-2">
+                  <button
+                    type="submit"
+                    id="btn-save-patient"
+                    class="btn btn-primary btn-3d"
+                  >
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Paciente
+                  </button>
+                  <button
+                    type="button"
+                    id="btn-cancel-patient"
+                    class="btn btn-secondary btn-3d hidden"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <!-- LISTA Y TABLA DE PACIENTES REGISTRADOS -->
+            <section class="card-box">
+              <div class="card-header search-header">
+                <h3><i class="fa-solid fa-list-check"></i> Listado de Citas</h3>
+
+                <div class="search-filter-box">
+                  <input
+                    type="text"
+                    id="search-patient"
+                    class="form-input input-sm"
+                    placeholder="Buscar por nombre o teléfono..."
+                  />
+                  <select id="filter-status" class="form-input input-sm">
+                    <option value="todos">Todos los estados</option>
+                    <option value="Pendiente">Pendientes</option>
+                    <option value="Atendido">Atendidos</option>
+                    <option value="Reagendar">Reagendar</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Paciente</th>
+                      <th>Fecha / Hora</th>
+                      <th>Lugar</th>
+                      <th>Estado</th>
+                      <th>Pago</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="patients-table-body">
+                    <!-- Dinámico mediante JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- PESTAÑA 2: AGENDA Y CONFERENCIAS -->
+        <div id="tab-agenda" class="tab-content hidden">
+          <div class="grid-layout">
+            <!-- FORMULARIO DE EVENTO / CONFERENCIA -->
+            <section class="card-box">
+              <div class="card-header">
+                <h3>
+                  <i class="fa-solid fa-pen-to-square"></i> Agendar Evento /
+                  Conferencia
+                </h3>
+              </div>
+
+              <form id="event-form" class="form-grid">
+                <input type="hidden" id="event-id" />
+
+                <div class="form-group span-2">
+                  <label for="event-title"
+                    >Título del Evento / Conferencia *</label
+                  >
+                  <input
+                    type="text"
+                    id="event-title"
+                    class="form-input"
+                    placeholder="Ej. Conferencia Día Mundial de la Salud Mental"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="event-category">Categoría</label>
+                  <select id="event-category" class="form-input">
+                    <option value="Conferencia">
+                      🎤 Conferencia / Ponencia
+                    </option>
+                    <option value="Reunion">
+                      👥 Reunión Académica / Clínica
+                    </option>
+                    <option value="Institucional">
+                      🏛️ Actividad Institucional
+                    </option>
+                    <option value="Personal">📌 Personal / Otro</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="event-datetime">Fecha y Hora *</label>
+                  <input
+                    type="datetime-local"
+                    id="event-datetime"
+                    class="form-input"
+                    required
+                  />
+                </div>
+
+                <div class="form-group span-2">
+                  <label for="event-location"
+                    >Lugar / Auditorio / Enlace Virtual *</label
+                  >
+                  <input
+                    type="text"
+                    id="event-location"
+                    class="form-input"
+                    placeholder="Ej. Auditorio Hospital Central de Maracay"
+                    required
+                  />
+                </div>
+
+                <div class="form-group span-2">
+                  <label for="event-requirements"
+                    >Requerimientos Técnicos / Detalle</label
+                  >
+                  <textarea
+                    id="event-requirements"
+                    class="form-input textarea-short"
+                    placeholder="Ej. Proyector VideoBeam, Micrófono, Diapositivas en laptop..."
+                  ></textarea>
+                </div>
+
+                <div class="form-actions span-2">
+                  <button
+                    type="submit"
+                    id="btn-save-event"
+                    class="btn btn-primary btn-3d"
+                  >
+                    <i class="fa-solid fa-calendar-plus"></i> Agendar Evento
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <!-- LISTA DE EVENTOS Y CONFERENCIAS -->
+            <section class="card-box">
+              <div class="card-header">
+                <h3>
+                  <i class="fa-solid fa-calendar-week"></i> Eventos y Reuniones
+                  Programadas
+                </h3>
+              </div>
+
+              <div id="events-list" class="events-grid">
+                <!-- Carga dinámica mediante JS -->
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- PESTAÑA 3: RESPALDOS Y EXPORTACIÓN -->
+        <div id="tab-backup" class="tab-content hidden">
+          <section class="card-box card-center">
+            <i class="fa-solid fa-shield-virus icon-hero"></i>
+            <h3>Copia de Seguridad de la Información</h3>
+            <p>
+              Descargue un respaldo local seguro de todos los pacientes,
+              historias clínicas y eventos registrados en la plataforma.
+            </p>
+            <br />
+            <button id="btn-export-backup" class="btn btn-primary btn-3d">
+              <i class="fa-solid fa-download"></i> Descargar Copia de Seguridad
+              (JSON / Excel)
+            </button>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL HISTORIA CLÍNICA & EVALUACIÓN         -->
+    <!-- ========================================== -->
+    <div id="modal-clinical" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>
+            <i class="fa-solid fa-notes-medical"></i> Expediente Clínico de
+            Psiquiatría
+          </h3>
+          <button id="btn-close-modal" class="btn-icon">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <p class="patient-title-modal">
+            Paciente: <strong id="modal-patient-name">-</strong>
+          </p>
+
+          <form id="clinical-form">
+            <input type="hidden" id="modal-patient-id" />
+
+            <div class="form-group">
+              <label for="clinical-history"
+                >Antecedentes Médicos y Psiquiátricos</label
+              >
+              <textarea
+                id="clinical-history"
+                class="form-input"
+                rows="3"
+                placeholder="Antecedentes familiares, médicos, tratamientos previos..."
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="clinical-diagnosis"
+                >Impresión Diagnóstica (Confidencial)</label
+              >
+              <textarea
+                id="clinical-diagnosis"
+                class="form-input sensitive-data"
+                rows="3"
+                placeholder="Criterios y diagnóstico..."
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="clinical-treatment"
+                >Esquema Farmacológico / Plan Terapéutico</label
+              >
+              <textarea
+                id="clinical-treatment"
+                class="form-input sensitive-data"
+                rows="3"
+                placeholder="Indicaciones, dosis y control..."
+              ></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary btn-3d">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar Expediente
+              </button>
+              <button
+                type="button"
+                id="btn-modal-cancel"
+                class="btn btn-secondary btn-3d"
+              >
+                Cerrar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="firebase-config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

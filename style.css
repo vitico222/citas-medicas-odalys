@@ -1,0 +1,773 @@
+/* ==========================================================================
+   1. VARIABLES GLOBALES Y CONFIGURACIÓN BASE (MOBILE-FIRST)
+   ========================================================================== */
+:root {
+  /* Paleta Cromática Corporativa */
+  --primary: #00a896; /* Turquesa OM (Logo) */
+  --primary-dark: #008072; /* Turquesa Oscuro para sombras 3D */
+  --primary-light: #e6f6f5; /* Fondo suave turquesa */
+  --secondary: #1d3557; /* Azul Marino Corporativo */
+  --secondary-dark: #112236; /* Azul Marino Sombras 3D */
+  --accent-gold: #d4af37; /* Dorado para detalles y briefing */
+
+  /* Neutros y Fondos */
+  --bg-main: #f4f7f6; /* Fondo general suave */
+  --bg-card: #ffffff; /* Tarjetas blancas */
+  --text-main: #2b2d42; /* Texto principal sobrio */
+  --text-muted: #6c757d; /* Texto secundario */
+  --border-color: #e2e8f0; /* Bordes finos */
+
+  /* Estados y Alertas */
+  --success: #2ec4b6;
+  --warning: #ff9f1c;
+  --danger: #e63946;
+  --info: #3a86ff;
+
+  /* Fuentes Corporativas */
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Poppins", sans-serif;
+  --font-alt: "Montserrat", sans-serif;
+
+  /* Sombras y Efectos 3D */
+  --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+  --shadow-3d-primary: 0 0.25rem 0 var(--primary-dark);
+  --shadow-3d-secondary: 0 0.25rem 0 var(--secondary-dark);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+
+  --transition: all 0.2s ease-in-out;
+}
+
+/* Reset y Normalización */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 100%; /* 1rem = 16px */
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  background-color: var(--bg-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Utilidades de Visualización */
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   2. ESTILOS DE BOTONES CON EFECTO 3D & ENLACES HOVER
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-alt);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition);
+  user-select: none;
+}
+
+/* Botón 3D Principal (Turquesa) */
+.btn-primary.btn-3d {
+  background-color: var(--primary);
+  color: #ffffff;
+  box-shadow: var(--shadow-3d-primary);
+}
+
+.btn-primary.btn-3d:hover {
+  background-color: #009686;
+  transform: translateY(-0.0625rem);
+}
+
+.btn-primary.btn-3d:active {
+  transform: translateY(0.1875rem);
+  box-shadow: 0 0.0625rem 0 var(--primary-dark);
+}
+
+/* Botón 3D Secundario (Azul Marino) */
+.btn-secondary.btn-3d {
+  background-color: var(--secondary);
+  color: #ffffff;
+  box-shadow: var(--shadow-3d-secondary);
+}
+
+.btn-secondary.btn-3d:hover {
+  background-color: #162a45;
+  transform: translateY(-0.0625rem);
+}
+
+.btn-secondary.btn-3d:active {
+  transform: translateY(0.1875rem);
+  box-shadow: 0 0.0625rem 0 var(--secondary-dark);
+}
+
+/* Botón Outline */
+.btn-outline {
+  background-color: transparent;
+  color: var(--secondary);
+  border: 0.125rem solid var(--secondary);
+}
+
+.btn-outline:hover {
+  background-color: var(--secondary);
+  color: #ffffff;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+/* Efectos Hover para Enlaces */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   3. CABECERA Y ENCABEZADO
+   ========================================================================== */
+.main-header {
+  background-color: #ffffff;
+  border-bottom: 0.0625rem solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.brand-logo {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 0.125rem solid var(--primary);
+}
+
+.brand-title {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  color: var(--secondary);
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-family: var(--font-alt);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.date-badge {
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  padding: 0.375rem 0.875rem;
+  border-radius: 1.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   4. PANTALLA DE AUTENTICACIÓN (LOGIN)
+   ========================================================================== */
+.main-container {
+  flex: 1;
+  max-width: 80rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+.auth-card {
+  max-width: 26.25rem;
+  margin: 2.5rem auto;
+  background-color: var(--bg-card);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 0.0625rem solid var(--border-color);
+  text-align: center;
+}
+
+.auth-logo {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  border: 0.1875rem solid var(--primary);
+}
+
+.auth-header h2 {
+  font-family: var(--font-heading);
+  color: var(--secondary);
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.auth-form {
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+  color: var(--secondary);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  border: 0.0625rem solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: #fafafa;
+  transition: var(--transition);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 0.1875rem rgba(0, 168, 150, 0.15);
+}
+
+.textarea-short {
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.alert-error {
+  background-color: #fde8e8;
+  color: var(--danger);
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* ==========================================================================
+   5. DASHBOARD & BRIEFING DIARIO (5:30 AM)
+   ========================================================================== */
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Tarjeta del Briefing */
+.briefing-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdfa 100%);
+  border: 0.0625rem solid rgba(0, 168, 150, 0.3);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.briefing-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 0.0625rem solid var(--border-color);
+  padding-bottom: 0.875rem;
+}
+
+.briefing-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon-gold {
+  font-size: 1.75rem;
+  color: var(--accent-gold);
+}
+
+.briefing-title h2 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--secondary);
+}
+
+.briefing-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.briefing-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.briefing-box {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  border: 0.0625rem solid var(--border-color);
+}
+
+.briefing-box h3 {
+  font-size: 0.9375rem;
+  color: var(--secondary);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.summary-list {
+  font-size: 0.875rem;
+}
+
+.summary-item {
+  padding: 0.5rem 0;
+  border-bottom: 0.0625rem dashed var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.empty-msg {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.8125rem;
+}
+
+/* KPIS GRID */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.kpi-card {
+  background-color: var(--bg-card);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 0.0625rem solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.kpi-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: #ffffff;
+}
+
+.bg-teal {
+  background-color: var(--primary);
+}
+.bg-blue {
+  background-color: var(--secondary);
+}
+.bg-orange {
+  background-color: var(--warning);
+}
+.bg-green {
+  background-color: var(--success);
+}
+
+.kpi-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--secondary);
+  line-height: 1.1;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   6. NAVEGACIÓN DE PESTAÑAS (TABS)
+   ========================================================================== */
+.tabs-navigation {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 0.125rem solid var(--border-color);
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.tab-btn {
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-alt);
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  border-bottom: 0.1875rem solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.tab-btn:hover {
+  color: var(--primary);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* ==========================================================================
+   7. FORMULARIOS Y TABLAS DE DATOS
+   ========================================================================== */
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.card-box {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 0.0625rem solid var(--border-color);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+  margin-bottom: 1.25rem;
+  border-bottom: 0.0625rem solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.card-header h3 {
+  font-family: var(--font-heading);
+  color: var(--secondary);
+  font-size: 1.125rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Filtros y Tabla */
+.search-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.search-filter-box {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.input-sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem;
+  border-bottom: 0.0625rem solid var(--border-color);
+}
+
+.data-table th {
+  background-color: var(--bg-main);
+  color: var(--secondary);
+  font-family: var(--font-alt);
+  font-weight: 600;
+}
+
+/* Badges / Etiquetas de Estado */
+.status-badge {
+  padding: 0.25rem 0.625rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-pendiente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.status-atendido {
+  background-color: #d4edda;
+  color: #155724;
+}
+.status-reagendar {
+  background-color: #ffe8cc;
+  color: #d97706;
+}
+.status-cancelado {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.badge-paid {
+  color: var(--success);
+  font-weight: 600;
+}
+.badge-unpaid {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.btn-whatsapp {
+  background-color: #25d366;
+  color: #ffffff !important;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.btn-whatsapp:hover {
+  background-color: #1eb857;
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   8. MODAL DE HISTORIA CLÍNICA CONFIDENCIAL
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(17, 34, 54, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-card {
+  background-color: var(--bg-card);
+  width: 100%;
+  max-width: 37.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  background-color: var(--secondary);
+  color: #ffffff;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.patient-title-modal {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: var(--primary-dark);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+/* Modo Privacidad para Diagnósticos */
+body.privacy-mode .sensitive-data {
+  filter: blur(0.3125rem);
+  user-select: none;
+  transition: var(--transition);
+}
+
+body.privacy-mode .sensitive-data:hover {
+  filter: none;
+}
+
+.card-center {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.icon-hero {
+  font-size: 3.5rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   9. MEDIA QUERIES (ADAPTACIÓN TABLET Y ESCRITORIO - RESPONSIVE)
+   ========================================================================== */
+@media (min-width: 48rem) {
+  /* iPads y Pantallas Medianas (768px+) */
+  .header-container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .briefing-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .briefing-body {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .span-2 {
+    grid-column: span 2;
+  }
+
+  .search-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+@media (min-width: 64rem) {
+  /* Escritorios (1024px+) */
+  .grid-layout {
+    grid-template-columns: 1fr 1.5fr;
+  }
+}
