@@ -79,7 +79,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1.5rem;
   font-family: var(--font-alt);
   font-size: 0.9375rem;
   font-weight: 600;
@@ -513,14 +513,11 @@ a:hover {
 }
 
 /* SCROLL EXCLUSIVO DENTRO DEL CONTENIDO DE LA PESTAÑA ACTIVA */
+/* PESTAÑA ACTIVA CON SCROLL NATURAL */
 .tab-content.active {
   display: block;
-  max-height: calc(
-    100vh - 22rem
-  ); /* Ocupa el espacio inferior con scroll interno */
-  overflow-y: auto;
-  padding-right: 0.25rem;
-  border-radius: var(--radius-sm);
+  max-height: none; /* Elimina la restricción de altura */
+  overflow-y: visible; /* Elimina el scroll interno secundario */
 }
 
 /* Estilo estilizado de la barra de scroll */
