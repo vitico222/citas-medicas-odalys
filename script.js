@@ -29,7 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
     btnLogout: document.getElementById("btn-logout"),
     currentDateBadge: document.getElementById("current-date-badge"),
 
-    // Briefing & Privacidad
+    // Notificaciones Matutinas
+    btnToggleNotifications: document.getElementById("btn-toggle-notifications"),
+    notifIcon: document.getElementById("notif-icon"),
+    notifText: document.getElementById("notif-text"),
+
+    // Briefing
     todaySummaryList: document.getElementById("today-summary-list"),
     tomorrowSummaryList: document.getElementById("tomorrow-summary-list"),
 
@@ -142,6 +147,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     DOM.btnExportBackup.addEventListener("click", exportBackupJSON);
 
+    // Listener para activar/desactivar notificaciones matutinas
+    if (DOM.btnToggleNotifications) {
+      DOM.btnToggleNotifications.addEventListener(
+        "click",
+        toggleNotificationPreference,
+      );
+    }
+
     // Clics interactivos en los KPIs
     if (DOM.cardKpiToday) {
       DOM.cardKpiToday.addEventListener("click", () => {
@@ -228,16 +241,20 @@ document.addEventListener("DOMContentLoaded", () => {
   function showLogin() {
     DOM.loginSection.classList.remove("hidden");
     DOM.dashboardSection.classList.add("hidden");
-    DOM.btnLogout.classList.add("hidden");
+    if (DOM.btnLogout) DOM.btnLogout.classList.add("hidden");
   }
 
   function showDashboard() {
     DOM.loginSection.classList.add("hidden");
     DOM.dashboardSection.classList.remove("hidden");
-    DOM.btnLogout.classList.remove("hidden");
+    if (DOM.btnLogout) DOM.btnLogout.classList.remove("hidden");
 
-    // ¡AQUÍ SE INICIA LA ESCUCHA DE FIREBASE EN TIEMPO REAL!
+    // Iniciar escucha en tiempo real de Firestore
     subscribeToFirestoreData();
+
+    // Actualizar interfaz y verificar notificaciones matutinas
+    updateNotificationUI();
+    checkAndTriggerMorningNotification();
   }
 
   function showLoginError(msg) {
@@ -256,11 +273,101 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // 5. SINCRONIZACIÓN FIREBASE EN TIEMPO REAL
+  // 5. CONTROL DE NOTIFICACIONES MATUTINAS
+  // ==========================================================================
+  function updateNotificationUI() {
+    if (!DOM.notifIcon || !DOM.notifText) return;
+    const isEnabled =
+      localStorage.getItem("om_notifications_enabled") === "true";
+    if (isEnabled && Notification.permission === "granted") {
+      DOM.notifIcon.className = "fa-solid fa-bell";
+      DOM.notifText.textContent = "Alertas Activas";
+      DOM.btnToggleNotifications.style.color = "var(--primary)";
+      DOM.btnToggleNotifications.style.borderColor = "var(--primary)";
+    } else {
+      DOM.notifIcon.className = "fa-solid fa-bell-slash";
+      DOM.notifText.textContent = "Alertas Desactivadas";
+      DOM.btnToggleNotifications.style.color = "var(--text-muted)";
+      DOM.btnToggleNotifications.style.borderColor = "var(--border-color)";
+    }
+  }
+
+  function toggleNotificationPreference() {
+    const currentState =
+      localStorage.getItem("om_notifications_enabled") === "true";
+
+    if (!currentState) {
+      if (!("Notification" in window)) {
+        alert("Este navegador no soporta notificaciones.");
+        return;
+      }
+
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          localStorage.setItem("om_notifications_enabled", "true");
+          updateNotificationUI();
+          showBriefingNotification(true);
+        } else {
+          alert(
+            "Debe permitir las notificaciones en los permisos del navegador.",
+          );
+        }
+      });
+    } else {
+      localStorage.setItem("om_notifications_enabled", "false");
+      updateNotificationUI();
+    }
+  }
+
+  function checkAndTriggerMorningNotification() {
+    const isEnabled =
+      localStorage.getItem("om_notifications_enabled") === "true";
+    if (!isEnabled || Notification.permission !== "granted") return;
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    const lastNotifiedDate = localStorage.getItem("om_last_notified_date");
+
+    if (lastNotifiedDate !== todayStr) {
+      showBriefingNotification();
+      localStorage.setItem("om_last_notified_date", todayStr);
+    }
+  }
+
+  function showBriefingNotification(isTest = false) {
+    const todayStr = new Date().toISOString().split("T")[0];
+    const todayCount = APP_STATE.patients.filter(
+      (p) => p.datetime && p.datetime.startsWith(todayStr),
+    ).length;
+    const eventsCount = APP_STATE.events.filter(
+      (e) => e.datetime && e.datetime.startsWith(todayStr),
+    ).length;
+
+    const title = isTest ? "🔔 Alarma Activada" : "🩺 Briefing Matutino";
+    const body = isTest
+      ? "Las alertas matutinas han sido activadas correctamente."
+      : `¡Buenos días, Dra. Odalys! Tiene ${todayCount} cita(s) y ${eventsCount} evento(s) para hoy.`;
+
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification(title, {
+          body: body,
+          icon: "assets/logo_oda.jpg",
+          vibrate: [200, 100, 200],
+        });
+      });
+    } else if (Notification.permission === "granted") {
+      new Notification(title, {
+        body: body,
+        icon: "assets/logo_oda.jpg",
+      });
+    }
+  }
+
+  // ==========================================================================
+  // 6. SINCRONIZACIÓN FIREBASE EN TIEMPO REAL
   // ==========================================================================
   function subscribeToFirestoreData() {
     if (window.FirebaseDB && window.FirebaseDB.subscribePatients) {
-      // Escuchar colección de Pacientes
       window.FirebaseDB.subscribePatients((snapshot) => {
         APP_STATE.patients = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -269,7 +376,6 @@ document.addEventListener("DOMContentLoaded", () => {
         renderDashboard();
       });
 
-      // Escuchar colección de Eventos
       window.FirebaseDB.subscribeEvents((snapshot) => {
         APP_STATE.events = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -278,7 +384,6 @@ document.addEventListener("DOMContentLoaded", () => {
         renderDashboard();
       });
     } else {
-      // Carga local si no hay Firebase configurado
       APP_STATE.patients =
         JSON.parse(localStorage.getItem("om_patients")) ||
         getInitialMockPatients();
@@ -289,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // 6. DASHBOARD & BRIEFING DIARIO (5:30 AM)
+  // 7. DASHBOARD & BRIEFING DIARIO (5:30 AM)
   // ==========================================================================
   function renderDashboard() {
     renderBriefing();
@@ -306,7 +411,6 @@ document.addEventListener("DOMContentLoaded", () => {
     tomorrow.setDate(now.getDate() + 1);
     const tomorrowStr = tomorrow.toISOString().split("T")[0];
 
-    // 1. Agenda para Hoy
     const todayPatients = APP_STATE.patients.filter(
       (p) => p.datetime && p.datetime.startsWith(todayStr),
     );
@@ -321,23 +425,22 @@ document.addEventListener("DOMContentLoaded", () => {
       todayPatients.forEach((p) => {
         const time = p.datetime ? p.datetime.split("T")[1] : "";
         html += `
-                    <div class="summary-item">
-                        <span>🩺 <strong>${p.name}</strong> (${time})</span>
-                        <span class="status-badge status-${(p.status || "pendiente").toLowerCase()}">${p.status}</span>
-                    </div>`;
+          <div class="summary-item">
+              <span>🩺 <strong>${p.name}</strong> (${time})</span>
+              <span class="status-badge status-${(p.status || "pendiente").toLowerCase()}">${p.status}</span>
+          </div>`;
       });
       todayEvents.forEach((e) => {
         const time = e.datetime ? e.datetime.split("T")[1] : "";
         html += `
-                    <div class="summary-item">
-                        <span>🎤 <strong>${e.title}</strong> (${time})</span>
-                        <span class="status-badge status-atendido">${e.category}</span>
-                    </div>`;
+          <div class="summary-item">
+              <span>🎤 <strong>${e.title}</strong> (${time})</span>
+              <span class="status-badge status-atendido">${e.category}</span>
+          </div>`;
       });
       DOM.todaySummaryList.innerHTML = html;
     }
 
-    // 2. Citas para Mañana
     const tomorrowPatients = APP_STATE.patients.filter(
       (p) => p.datetime && p.datetime.startsWith(tomorrowStr),
     );
@@ -350,15 +453,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const time = p.datetime ? p.datetime.split("T")[1] : "";
         const waUrl = generateWhatsAppLink(p);
         html += `
-                    <div class="summary-item">
-                        <div>
-                            <strong>${p.name}</strong> - ${time}<br>
-                            <small class="text-muted"><i class="fa-solid fa-location-dot"></i> ${p.location}</small>
-                        </div>
-                        <a href="${waUrl}" target="_blank" class="btn-whatsapp" title="Enviar recordatorio por WhatsApp">
-                            <i class="fa-brands fa-whatsapp"></i> Recordar
-                        </a>
-                    </div>`;
+          <div class="summary-item">
+              <div>
+                  <strong>${p.name}</strong> - ${time}<br>
+                  <small class="text-muted"><i class="fa-solid fa-location-dot"></i> ${p.location}</small>
+              </div>
+              <a href="${waUrl}" target="_blank" class="btn-whatsapp" title="Enviar recordatorio por WhatsApp">
+                  <i class="fa-brands fa-whatsapp"></i> Recordar
+              </a>
+          </div>`;
       });
       DOM.tomorrowSummaryList.innerHTML = html;
     }
@@ -385,7 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // 7. GESTIÓN DE PACIENTES (FIREBASE CRUD)
+  // 8. GESTIÓN DE PACIENTES (FIREBASE CRUD)
   // ==========================================================================
   function handleSavePatient(e) {
     e.preventDefault();
@@ -415,7 +518,6 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     } else {
-      // Local fallback
       if (id) {
         const index = APP_STATE.patients.findIndex((p) => p.id === id);
         if (index >= 0) APP_STATE.patients[index] = { id, ...patientData };
@@ -455,29 +557,29 @@ document.addEventListener("DOMContentLoaded", () => {
       const payClass = p.payment === "Pagado" ? "badge-paid" : "badge-unpaid";
 
       html += `
-                <tr>
-                    <td><strong>${p.name}</strong><br><small class="text-muted">${p.phone}</small></td>
-                    <td>${formattedDate}</td>
-                    <td><small>${p.location}</small></td>
-                    <td><span class="status-badge status-${(p.status || "pendiente").toLowerCase()}">${p.status}</span></td>
-                    <td><span class="${payClass}">${p.payment}</span></td>
-                    <td>
-                        <div style="display:flex; gap:0.375rem; flex-wrap:wrap;">
-                            <a href="${waUrl}" target="_blank" class="btn-whatsapp" title="Enviar recordatorio WhatsApp">
-                                <i class="fa-brands fa-whatsapp"></i>
-                            </a>
-                            <button class="btn btn-secondary btn-sm" onclick="editPatient('${p.id}')" title="Editar cita">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button class="btn btn-outline btn-sm" onclick="openClinicalModal('${p.id}')" title="Ver Historia Clínica">
-                                <i class="fa-solid fa-notes-medical"></i>
-                            </button>
-                            <button class="btn btn-outline btn-sm" style="color:var(--danger);" onclick="deletePatient('${p.id}')" title="Eliminar">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>`;
+        <tr>
+            <td><strong>${p.name}</strong><br><small class="text-muted">${p.phone}</small></td>
+            <td>${formattedDate}</td>
+            <td><small>${p.location}</small></td>
+            <td><span class="status-badge status-${(p.status || "pendiente").toLowerCase()}">${p.status}</span></td>
+            <td><span class="${payClass}">${p.payment}</span></td>
+            <td>
+                <div style="display:flex; gap:0.375rem; flex-wrap:wrap;">
+                    <a href="${waUrl}" target="_blank" class="btn-whatsapp" title="Enviar recordatorio WhatsApp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                    <button class="btn btn-secondary btn-sm" onclick="editPatient('${p.id}')" title="Editar cita">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="openClinicalModal('${p.id}')" title="Ver Historia Clínica">
+                        <i class="fa-solid fa-notes-medical"></i>
+                    </button>
+                    <button class="btn btn-outline btn-sm" style="color:var(--danger);" onclick="deletePatient('${p.id}')" title="Eliminar">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>`;
     });
 
     DOM.patientsTableBody.innerHTML = html;
@@ -543,7 +645,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // 8. GESTIÓN DE EVENTOS Y CONFERENCIAS
+  // 9. GESTIÓN DE EVENTOS Y CONFERENCIAS
   // ==========================================================================
   function handleSaveEvent(e) {
     e.preventDefault();
@@ -576,17 +678,17 @@ document.addEventListener("DOMContentLoaded", () => {
     APP_STATE.events.forEach((e) => {
       const formattedDate = formatDateTime(e.datetime);
       html += `
-                <div class="card-box">
-                    <h4>${getCategoryIcon(e.category)} ${e.title}</h4>
-                    <p><small><strong>Fecha:</strong> ${formattedDate}</small></p>
-                    <p><small><strong>Lugar:</strong> ${e.location}</small></p>
-                    ${e.requirements ? `<p><small><strong>Detalles:</strong> ${e.requirements}</small></p>` : ""}
-                    <div style="text-align:right; margin-top:0.5rem;">
-                        <button class="btn btn-outline btn-sm" style="color:var(--danger);" onclick="deleteEvent('${e.id}')">
-                            <i class="fa-solid fa-trash"></i> Eliminar
-                        </button>
-                    </div>
-                </div>`;
+        <div class="card-box">
+            <h4>${getCategoryIcon(e.category)} ${e.title}</h4>
+            <p><small><strong>Fecha:</strong> ${formattedDate}</small></p>
+            <p><small><strong>Lugar:</strong> ${e.location}</small></p>
+            ${e.requirements ? `<p><small><strong>Detalles:</strong> ${e.requirements}</small></p>` : ""}
+            <div style="text-align:right; margin-top:0.5rem;">
+                <button class="btn btn-outline btn-sm" style="color:var(--danger);" onclick="deleteEvent('${e.id}')">
+                    <i class="fa-solid fa-trash"></i> Eliminar
+                </button>
+            </div>
+        </div>`;
     });
 
     DOM.eventsList.innerHTML = html;
@@ -618,7 +720,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // 9. MODAL DE HISTORIA CLÍNICA (PSIQUIATRÍA)
+  // 10. MODAL DE HISTORIA CLÍNICA (PSIQUIATRÍA)
   // ==========================================================================
   window.openClinicalModal = function (id) {
     const patient = APP_STATE.patients.find((p) => p.id === id);
@@ -664,7 +766,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // 10. RESPALDO EN JSON Y AUXILIARES
+  // 11. RESPALDO EN JSON Y AUXILIARES
   // ==========================================================================
   function exportBackupJSON() {
     const dataStr =

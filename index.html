@@ -54,9 +54,15 @@
           <span id="current-date-badge" class="date-badge"
             ><i class="fa-regular fa-calendar-check"></i> Loading...</span
           >
-          <button id="btn-logout" class="btn btn-secondary btn-3d hidden">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="btn-text">Cerrar Sesión</span>
+
+          <!-- Botón para Activar/Desactivar Alertas -->
+          <button
+            id="btn-toggle-notifications"
+            class="btn btn-outline btn-sm"
+            title="Activar/Desactivar Alertas de Briefing"
+          >
+            <i class="fa-solid fa-bell-slash" id="notif-icon"></i>
+            <span id="notif-text">Alertas Desactivadas</span>
           </button>
         </div>
       </div>
@@ -563,4 +569,30 @@
     <script type="module" src="firebase-config.js"></script>
     <script src="script.js"></script>
   </body>
+  <!-- ========================================== -->
+  <!-- PIE DE PÁGINA CORPORATIVO (FOOTER)         -->
+  <!-- ========================================== -->
+  <footer id="main-footer" class="main-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="footer-info">
+          <h4>Dra. Odalys Martínez</h4>
+          <p>Médico Psiquiatra | Agenda Profesional & Gestión Clínica</p>
+        </div>
+      </div>
+
+      <div class="footer-actions">
+        <button id="btn-logout" class="btn btn-secondary btn-3d hidden">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span class="btn-text">Cerrar Sesión</span>
+        </button>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>
+        &copy; 2026 Dra. Odalys Martínez. Todos los derechos reservados. |
+        Plataforma Médica Privada
+      </p>
+    </div>
+  </footer>
 </html>
