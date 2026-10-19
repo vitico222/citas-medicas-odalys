@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================================================
   const APP_STATE = {
     currentUser: null,
-    privacyMode: false,
     patients: [],
     events: [],
   };
@@ -33,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Briefing & Privacidad
     todaySummaryList: document.getElementById("today-summary-list"),
     tomorrowSummaryList: document.getElementById("tomorrow-summary-list"),
-    btnTogglePrivacy: document.getElementById("btn-toggle-privacy"),
 
     // Métricas (KPIs)
     kpiTodayPatients: document.getElementById("kpi-today-patients"),
@@ -138,8 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     DOM.searchPatient.addEventListener("input", renderPatientsTable);
     DOM.filterStatus.addEventListener("change", renderPatientsTable);
-
-    DOM.btnTogglePrivacy.addEventListener("click", togglePrivacyMode);
 
     DOM.btnCloseModal.addEventListener("click", closeModal);
     DOM.btnModalCancel.addEventListener("click", closeModal);
@@ -257,12 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.tabContents.forEach((content) =>
       content.classList.toggle("hidden", content.id !== tabId),
     );
-  }
-
-  function togglePrivacyMode() {
-    APP_STATE.privacyMode = !APP_STATE.privacyMode;
-    document.body.classList.toggle("privacy-mode", APP_STATE.privacyMode);
-    DOM.btnTogglePrivacy.classList.toggle("btn-primary", APP_STATE.privacyMode);
   }
 
   // ==========================================================================
