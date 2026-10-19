@@ -427,6 +427,14 @@ a:hover {
   align-items: center;
   gap: 0.625rem;
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.kpi-card:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
 }
 
 .kpi-icon {

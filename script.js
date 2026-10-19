@@ -84,6 +84,18 @@ document.addEventListener("DOMContentLoaded", () => {
     btnCloseModal: document.getElementById("btn-close-modal"),
     btnModalCancel: document.getElementById("btn-modal-cancel"),
 
+    // Contenedores KPI para clics
+    cardKpiToday:
+      document.getElementById("kpi-today-patients")?.parentElement
+        ?.parentElement,
+    cardKpiEvents:
+      document.getElementById("kpi-events-month")?.parentElement?.parentElement,
+    cardKpiReschedule: document.getElementById("kpi-pending-reschedule")
+      ?.parentElement?.parentElement,
+    cardKpiAttended:
+      document.getElementById("kpi-attended-month")?.parentElement
+        ?.parentElement,
+
     // Respaldos
     btnExportBackup: document.getElementById("btn-export-backup"),
   };
@@ -133,6 +145,40 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.btnModalCancel.addEventListener("click", closeModal);
 
     DOM.btnExportBackup.addEventListener("click", exportBackupJSON);
+
+    // Clics interactivos en los KPIs
+    if (DOM.cardKpiToday) {
+      DOM.cardKpiToday.addEventListener("click", () => {
+        switchTab("tab-pacientes");
+        DOM.filterStatus.value = "todos";
+        DOM.searchPatient.value = "";
+        renderPatientsTable();
+      });
+    }
+
+    if (DOM.cardKpiEvents) {
+      DOM.cardKpiEvents.addEventListener("click", () => {
+        switchTab("tab-agenda");
+      });
+    }
+
+    if (DOM.cardKpiReschedule) {
+      DOM.cardKpiReschedule.addEventListener("click", () => {
+        switchTab("tab-pacientes");
+        DOM.filterStatus.value = "Reagendar";
+        DOM.searchPatient.value = "";
+        renderPatientsTable();
+      });
+    }
+
+    if (DOM.cardKpiAttended) {
+      DOM.cardKpiAttended.addEventListener("click", () => {
+        switchTab("tab-pacientes");
+        DOM.filterStatus.value = "Atendido";
+        DOM.searchPatient.value = "";
+        renderPatientsTable();
+      });
+    }
   }
 
   function handleLogin(e) {
